@@ -4,7 +4,7 @@
 struct Produto {
     char nome[50];
     float custo, lucro, retorno, fracao;
-}
+};
 
 int main() {
     int n, i, j;
@@ -24,8 +24,17 @@ int main() {
         scanf("%f", &produtos[i].custo);
         printf("Lucro: ");
         scanf("%f", &produtos[i].lucro);
-        produtos[i].retorno = produtos[i].lucro / produtos[i].custo;
-        produtos[i].fracao = 0.0;
+
+        if(produtos[i].custo <= 0) {
+            produtos[i].fracao = 0.0;
+            produtos[i].retorno = 0.0;
+            printf("Custo invalido (<= 0). Produto sera ignorado.\n");
+        }
+
+        else {
+            produtos[i].retorno = produtos[i].lucro / produtos[i].custo;
+            produtos[i].fracao = 0.0;
+        }
     }
 
     for (i = 0; i < n - 1; i++) {
@@ -42,17 +51,26 @@ int main() {
         if (produtos[i].custo <= orcamento) {
             produtos[i].fracao = 1.0;
             orcamento -= produtos[i].custo;
-        } else {
+        }
+
+        else if (orcamento > 0 && produtos[i].custo > orcamento) {
             produtos[i].fracao = orcamento / produtos[i].custo;
+            printf("Orcamento insuficiente para o produto %s. Investindo parcialmente (%.2f%%).\n",
+               produtos[i].nome, produtos[i].fracao * 100);
             orcamento = 0;
             break;
+        }
+
+        else {
+            printf("Orcamento esgotado antes de considerar o produto %s.\n", produtos[i].nome);
+            produtos[i].fracao = 0.0;
         }
     }
 
     printf("\nProdutos selecionados:\n");
     for (i = 0; i < n; i++) {
         if (produtos[i].fracao > 0) {
-            printf("%dº Melhor Produto: %s | Retorno: %.2f\n",
+            printf("%do Melhor Produto: %s | Retorno: %.2f\n",
                    i + 1, produtos[i].nome, produtos[i].retorno);
             total_custo += produtos[i].custo * produtos[i].fracao;
             total_lucro += produtos[i].lucro * produtos[i].fracao;
